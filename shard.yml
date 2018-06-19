@@ -1,0 +1,13 @@
+name: gps_server
+version: 0.0.1
+
+authors:
+  - Michał Kurek <michal+github@md6.org>
+
+targets:
+  gps_server:
+    main: src/gps_server.cr
+
+crystal: 0.25.0
+
+license: MIT
