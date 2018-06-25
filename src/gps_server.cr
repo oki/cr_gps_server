@@ -23,26 +23,16 @@ Dotenv.load("/Users/oki/dev/work/#{s_foo}/.env")
 alias GpsProtocol = (Protocols::Tk103Client.class | Protocols::Gt06Client.class)
 
 class GeneralServer
+  @sidekiq_pusher : SidekiqPusher
+
   def initialize
     @host = "0.0.0.0"
-    @port = 5023
+
     @channels = [] of Channel(Command)
     @channel = Channel(Hash(String, String)).new
     @gps_protocols = Hash(UInt32, GpsProtocol).new
 
-    # puts "Binding to port #{@host}:#{@port}"
-    # @server = TCPServer.new(@host, @port)
-
-    redis = Redis.new(host: ENV["REDIS_HOST"], port: ENV["REDIS_PORT"].to_i, database: ENV["REDIS_DB"].to_i)
-    puts redis.url
-    @sidekiq_pusher = SidekiqPusher.new(redis.url)
-
-    if @sidekiq_pusher.ping
-      puts "Redis OK (#{redis.url})"
-    else
-      puts "Problem with redis"
-    end
-    redis.close
+    @sidekiq_pusher = setup_sidekiq_pusher
   end
 
   def run
@@ -99,6 +89,20 @@ class GeneralServer
 
       exit 0
     end
+  end
+
+  def setup_sidekiq_pusher
+    redis = Redis.new(host: ENV["REDIS_HOST"], port: ENV["REDIS_PORT"].to_i, database: ENV["REDIS_DB"].to_i)
+    sidekiq_pusher = SidekiqPusher.new(redis.url)
+
+    if sidekiq_pusher.ping
+      puts "Redis OK (#{redis.url})"
+    else
+      raise "Problem with redis"
+    end
+    redis.close
+
+    sidekiq_pusher
   end
 
   def setup_feedback_channel
