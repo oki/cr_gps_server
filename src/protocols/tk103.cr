@@ -48,9 +48,9 @@ module Protocols
     def gps_data
       data = body
 
-      unless data
+      if !data || data.size < 10
         puts "Empty data"
-        return nil
+        return {} of String => String
       end
 
       # Latitude
@@ -75,14 +75,16 @@ module Protocols
 
       time = Time.utc(yy, mm, dd, hh, ii, ss).to_local.to_s
       # time = time.localtime("+02:00").to_s
-      speed = data[28..33].to_f
+      speed = data[28..33].to_f.to_s
 
       {
-        date:  time,
-        lat:   lat,
-        lng:   lng,
-        speed: speed,
+        "date"  => time,
+        "lat"   => lat,
+        "lng"   => lng,
+        "speed" => speed,
       }
+    rescue
+      return {} of String => String
     end
 
     def response

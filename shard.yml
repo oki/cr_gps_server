@@ -8,6 +8,13 @@ targets:
   gps_server:
     main: src/gps_server.cr
 
+dependencies:
+  redis:
+    github: stefanwille/crystal-redis
+    version: ~> 2.0.0
+  dotenv:
+    github: gdotdesign/cr-dotenv
+
 crystal: 0.25.0
 
 license: MIT
