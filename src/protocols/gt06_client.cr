@@ -4,10 +4,6 @@ module Protocols
       puts "Client connected! ( #{@device_id} )"
 
       quit
-
-      # 200.times do |n|
-      #   message = @client.gets(")")
-      #   break if message.nil?
     end
   end
 end

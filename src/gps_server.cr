@@ -72,8 +72,6 @@ class GeneralServer
   end
 
   def handle_client(client_class, client, channel, done_channel)
-    # Client.new(client, channel, done_channel).call
-    # Protocols::Tk103Client.new(client, channel, done_channel).call
     client_class.new(client, channel, done_channel).call
   end
 
@@ -106,8 +104,6 @@ class GeneralServer
   end
 
   def setup_feedback_channel
-    # data from clients
-    # spawn do
     loop do
       puts "Feedback channel waiting for data..."
       data = @channel.receive
@@ -146,6 +142,5 @@ class GeneralServer
         @sidekiq_pusher.call(worker_class, queue, push_data)
       end
     end
-    # end
   end
 end

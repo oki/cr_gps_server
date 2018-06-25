@@ -2,8 +2,6 @@ module Protocols
   class Tk103Client < Client
     def handle_messages
       puts "Client connected! ( #{@device_id} )"
-      # @client.puts "hello"
-      # @channel.send({"command" => "register", "device_id" => @device_id.to_s})
 
       200.times do |n|
         message = @client.gets(")")
@@ -13,7 +11,6 @@ module Protocols
         tmp_time_formatted = Time.now.to_s("%Y-%m-%d %H:%M:%S")
         proto = Protocols::Tk103.new(message.bytes)
 
-        # message_hex = StringUtils.bin_to_hex(message).join(" ")
         puts "[#{tmp_time_formatted}] #{proto.command_name} received data: #{message}"
         puts proto.response
 
@@ -36,7 +33,6 @@ module Protocols
         else
           puts "device_id: #{@device_id}"
         end
-        # puts "received hex data: #{message_hex}"
       end
     rescue Errno
     ensure
