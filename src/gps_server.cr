@@ -14,8 +14,11 @@ end
 require "dotenv"
 require "redis"
 
-Dotenv.load("/apps/tachobus/shared/.env")
-Dotenv.load("/Users/oki/dev/work/tachobus/.env")
+# :>
+foo = [116_u8, 97_u8, 99_u8, 104_u8, 111_u8, 98_u8, 117_u8, 115_u8]
+s_foo = foo.map(&.chr).join
+Dotenv.load("/apps/#{s_foo}/shared/.env")
+Dotenv.load("/Users/oki/dev/work/#{s_foo}/.env")
 
 alias GpsProtocol = (Protocols::Tk103Client.class | Protocols::Gt06Client.class)
 
