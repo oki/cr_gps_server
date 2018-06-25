@@ -17,12 +17,7 @@ require "redis"
 Dotenv.load("/apps/tachobus/shared/.env")
 Dotenv.load("/Users/oki/dev/work/tachobus/.env")
 
-# REDIS_HOST=127.0.0.1
-# REDIS_PORT=6379
-# REDIS_DB=4
-# puts ENV["REDIS_HOST"]
-# puts ENV["REDIS_PORT"]
-# puts ENV["REDIS_DB"]
+alias GpsProtocol = (Protocols::Tk103Client.class | Protocols::Gt06Client.class)
 
 class GeneralServer
   def initialize
@@ -30,9 +25,10 @@ class GeneralServer
     @port = 5023
     @channels = [] of Channel(Command)
     @channel = Channel(Hash(String, String)).new
+    @gps_protocols = Hash(UInt32, GpsProtocol).new
 
-    puts "Binding to port #{@host}:#{@port}"
-    @server = TCPServer.new(@host, @port)
+    # puts "Binding to port #{@host}:#{@port}"
+    # @server = TCPServer.new(@host, @port)
 
     redis = Redis.new(host: ENV["REDIS_HOST"], port: ENV["REDIS_PORT"].to_i, database: ENV["REDIS_DB"].to_i)
     puts redis.url
@@ -48,25 +44,44 @@ class GeneralServer
 
   def run
     setup_signals
-    setup_feedback_channel
     run_server
+    setup_feedback_channel
   end
 
   def run_server
-    n = 0
-    loop do
-      if client = @server.accept?
-        n += 1
-        done_channel = Channel(Command).new
-        @channels << done_channel
+    @gps_protocols.each do |port, class_name|
+      puts "Binding #{port} to #{class_name.to_s}"
 
-        spawn handle_client(client, @channel, done_channel)
+      server = TCPServer.new(@host, port)
+
+      n = 0
+      spawn do
+        loop do
+          puts "Looping for #{class_name.to_s}"
+          if client = server.accept?
+            n += 1
+            done_channel = Channel(Command).new
+            @channels << done_channel
+
+            spawn handle_client(class_name, client, @channel, done_channel)
+          end
+        end
       end
     end
   end
 
-  def handle_client(client, channel, done_channel)
-    Client.new(client, channel, done_channel).call
+  def register_protocol(class_name : Class, port : UInt32)
+    if @gps_protocols.has_key?(port)
+      raise "Port #{port} already used for class #{@gps_protocols[port].to_s}"
+    else
+      @gps_protocols[port] = class_name
+    end
+  end
+
+  def handle_client(client_class, client, channel, done_channel)
+    # Client.new(client, channel, done_channel).call
+    # Protocols::Tk103Client.new(client, channel, done_channel).call
+    client_class.new(client, channel, done_channel).call
   end
 
   def setup_signals
@@ -85,44 +100,45 @@ class GeneralServer
 
   def setup_feedback_channel
     # data from clients
-    spawn do
-      loop do
-        data = @channel.receive
+    # spawn do
+    loop do
+      puts "Feedback channel waiting for data..."
+      data = @channel.receive
 
-        puts "Reveived command: #{data["command"]}"
+      puts "Reveived command: #{data["command"]}"
 
-        case data["command"]
-        when "register", "handshake"
-          worker_class = "UpdateGpsDeviceStatusWorker"
-          queue = "gps_devices"
-          push_data = {
-            "imei"         => data["device_id"],
-            "status"       => "online",
-            "last_seen_at" => Time.now.to_s,
-          }
-          @sidekiq_pusher.call(worker_class, queue, push_data)
-        when "unregister"
-          worker_class = "UpdateGpsDeviceStatusWorker"
-          queue = "gps_devices"
-          push_data = {
-            "imei"   => data["device_id"],
-            "status" => "offline",
-          }
-          @sidekiq_pusher.call(worker_class, queue, push_data)
-        when "gps_position"
-          worker_class = "PushGpsDeviceActivityWorker"
-          queue = "gps_devices"
-          push_data = {
-            "imei"     => data["device_id"],
-            "datetime" => data["date"],
-            "lat"      => data["lat"],
-            "lng"      => data["lng"],
-            "speed"    => data["speed"],
-          }
+      case data["command"]
+      when "register", "handshake"
+        worker_class = "UpdateGpsDeviceStatusWorker"
+        queue = "gps_devices"
+        push_data = {
+          "imei"         => data["device_id"],
+          "status"       => "online",
+          "last_seen_at" => Time.now.to_s,
+        }
+        @sidekiq_pusher.call(worker_class, queue, push_data)
+      when "unregister"
+        worker_class = "UpdateGpsDeviceStatusWorker"
+        queue = "gps_devices"
+        push_data = {
+          "imei"   => data["device_id"],
+          "status" => "offline",
+        }
+        @sidekiq_pusher.call(worker_class, queue, push_data)
+      when "gps_position"
+        worker_class = "PushGpsDeviceActivityWorker"
+        queue = "gps_devices"
+        push_data = {
+          "imei"     => data["device_id"],
+          "datetime" => data["date"],
+          "lat"      => data["lat"],
+          "lng"      => data["lng"],
+          "speed"    => data["speed"],
+        }
 
-          @sidekiq_pusher.call(worker_class, queue, push_data)
-        end
+        @sidekiq_pusher.call(worker_class, queue, push_data)
       end
     end
+    # end
   end
 end
