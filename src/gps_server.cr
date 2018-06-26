@@ -32,6 +32,9 @@ class GeneralServer
     @channel = Channel(Hash(String, String)).new
     @gps_protocols = Hash(UInt32, GpsProtocol).new
 
+    path = "request_logs.json"
+    @log_file = File.new(path, "a")
+
     @sidekiq_pusher = setup_sidekiq_pusher
   end
 
@@ -110,6 +113,8 @@ class GeneralServer
 
       puts "Reveived command: #{data["command"]}"
 
+      save_log(data)
+
       case data["command"]
       when "register", "handshake"
         worker_class = "UpdateGpsDeviceStatusWorker"
@@ -142,5 +147,10 @@ class GeneralServer
         @sidekiq_pusher.call(worker_class, queue, push_data)
       end
     end
+  end
+
+  def save_log(data)
+    @log_file.puts (data.merge({"_ts" => Time.now.to_s})).to_json
+    @log_file.flush
   end
 end
