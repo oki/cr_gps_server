@@ -2,7 +2,7 @@ require "../spec_helper"
 
 describe "Protocols::Tk103" do
   describe "3.2.2 Login message BP05" do
-    login_bytes = StringUtils.hex_string_to_bin("28 30 38 37 30 37 34 39 37 30 31 36 35 42 50 30 35 33 35 32 38 38 37 30 37 34 39 37 30 31 36 35 31 38 30 35 32 32 41 35 30 30 38 2e 38 39 30 33 4e 30 31 39 31 38 2e 31 38 33 38 45 31 35 33 2e 32 31 30 34 36 33 31 32 37 36 2e 34 36 31 31 30 30 30 30 30 30 4c 30 30 30 34 35 30 41 42 29")
+    login_bytes = StringUtils.hex_string_to_bin2("28 30 38 37 30 37 34 39 37 30 31 36 35 42 50 30 35 33 35 32 38 38 37 30 37 34 39 37 30 31 36 35 31 38 30 35 32 32 41 35 30 30 38 2e 38 39 30 33 4e 30 31 39 31 38 2e 31 38 33 38 45 31 35 33 2e 32 31 30 34 36 33 31 32 37 36 2e 34 36 31 31 30 30 30 30 30 30 4c 30 30 30 34 35 30 41 42 29")
 
     proto = Protocols::Tk103.new(login_bytes)
 
@@ -42,7 +42,7 @@ describe "Protocols::Tk103" do
 
   describe "3.2.1 Handshake signal Message HSO0" do
     # (087074938436BP00352887074938436HSO0184)
-    handshake_bytes = StringUtils.hex_string_to_bin("28 30 38 37 30 37 34 39 33 38 34 33 36 42 50 30 30 33 35 32 38 38 37 30 37 34 39 33 38 34 33 36 48 53 4f 30 31 38 34 29")
+    handshake_bytes = StringUtils.hex_string_to_bin2("28 30 38 37 30 37 34 39 33 38 34 33 36 42 50 30 30 33 35 32 38 38 37 30 37 34 39 33 38 34 33 36 48 53 4f 30 31 38 34 29")
     proto = Protocols::Tk103.new(handshake_bytes)
 
     it "returns command" do
@@ -60,7 +60,7 @@ describe "Protocols::Tk103" do
 
   describe "3.2.6 Isochronous for continues feedback message BR00" do
     # (087074970165BR00180522A5213.6890N01814.9675E000.3152200000.0011000000L000450AB)
-    feedback_bytes = StringUtils.hex_string_to_bin("28 30 38 37 30 37 34 39 37 30 31 36 35 42 52 30 30 31 38 30 35 32 32 41 35 32 31 33 2e 36 38 39 30 4e 30 31 38 31 34 2e 39 36 37 35 45 30 30 30 2e 33 31 35 32 32 30 30 30 30 30 2e 30 30 31 31 30 30 30 30 30 30 4c 30 30 30 34 35 30 41 42 29")
+    feedback_bytes = StringUtils.hex_string_to_bin2("28 30 38 37 30 37 34 39 37 30 31 36 35 42 52 30 30 31 38 30 35 32 32 41 35 32 31 33 2e 36 38 39 30 4e 30 31 38 31 34 2e 39 36 37 35 45 30 30 30 2e 33 31 35 32 32 30 30 30 30 30 2e 30 30 31 31 30 30 30 30 30 30 4c 30 30 30 34 35 30 41 42 29")
     proto = Protocols::Tk103.new(feedback_bytes)
 
     it "returns running_time" do

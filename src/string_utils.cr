@@ -4,6 +4,10 @@ class StringUtils
   end
 
   def self.hex_string_to_bin(s)
+    s.split.map(&.to_i(16))
+  end
+
+  def self.hex_string_to_bin2(s)
     s.split.map(&.to_u8(16))
   end
 end
