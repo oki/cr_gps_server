@@ -2,7 +2,7 @@ require "./spec_helper"
 
 describe CrcItu do
   hex_to_int = ->(str : String) {
-    str.split.map(&.to_i32(16))
+    str.split.map(&.to_u8(16))
   }
 
   int_to_hex = ->(n : Int32) {

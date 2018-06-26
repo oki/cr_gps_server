@@ -38,7 +38,7 @@ module CrcItu
     0x7bc7, 0x6a4e, 0x58d5, 0x495c, 0x3de3, 0x2c6a, 0x1ef1, 0x0f78,
   ]
 
-  def self.crc(buf : Array(Int32))
+  def self.crc(buf : Array(UInt8))
     fcs = 0xffff
     buf.each do |byte|
       fcs = (fcs >> 8) ^ CRCTAB16[(fcs ^ byte) & 0xff]
