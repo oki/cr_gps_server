@@ -57,7 +57,7 @@ module Protocols
       when :login, :alarm, :location, :status_information
         universal_response
       else
-        "Unknown"
+        [] of UInt8
       end
     end
 
@@ -174,6 +174,7 @@ module Protocols
         5_u8,                # len
         protocol_number_raw, # protocol number
       ]
+
       package << serial_number[0]
       package << serial_number[1]
 

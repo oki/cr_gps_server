@@ -35,11 +35,8 @@ module Protocols
         if proto.protocol_number == :login || proto.protocol_number == :alarm || proto.protocol_number == :location || proto.protocol_number == :status_information
           response_package = proto.response
           # pp typeof(response_package)
-          # response_hex = StringUtils.bin_to_hex(response_package).join(" ")
-          # puts "#{n}. response to #{proto.protocol_number}: #{response_hex}"
-          pp typeof(response_package)
-          puts response_package
-          # pp response_package.map { |b| b.to_s(16).rjust(2, '0') }
+          response_hex = response_package.map { |b| b.to_s(16).rjust(2, '0') }.join " "
+          puts "response to #{proto.protocol_number}: #{response_hex}"
           @client.puts(response_package)
         end
       end
