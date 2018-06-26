@@ -108,10 +108,11 @@ class GeneralServer
 
   def setup_feedback_channel
     loop do
-      puts "Feedback channel waiting for data..."
+      puts "Feedback channel: waiting for data..."
       data = @channel.receive
 
       puts "Reveived command: #{data["command"]}"
+      pp data
 
       save_log(data)
 

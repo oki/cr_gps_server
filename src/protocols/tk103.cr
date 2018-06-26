@@ -49,7 +49,6 @@ module Protocols
       data = body
 
       if !data || data.size < 10
-        puts "Empty data"
         return {} of String => String
       end
 
