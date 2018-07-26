@@ -1,4 +1,5 @@
 require "socket"
+require "colorize"
 require "./client"
 require "./protocols/*"
 require "./sidekiq_pusher"
@@ -19,6 +20,7 @@ foo = [116_u8, 97_u8, 99_u8, 104_u8, 111_u8, 98_u8, 117_u8, 115_u8]
 s_foo = foo.map(&.chr).join
 Dotenv.load("/apps/#{s_foo}/shared/.env")
 Dotenv.load("/Users/oki/dev/work/#{s_foo}/.env")
+Colorize.enabled = true
 
 alias GpsProtocol = (Protocols::Tk103Client.class | Protocols::Gt06Client.class)
 
@@ -46,14 +48,14 @@ class GeneralServer
 
   def run_server
     @gps_protocols.each do |port, class_name|
-      puts "Binding #{port} to #{class_name.to_s}"
+      puts "Binding #{port} to #{class_name.to_s}".colorize(:blue)
 
       server = TCPServer.new(@host, port)
 
       n = 0
       spawn do
         loop do
-          puts "Looping for #{class_name.to_s}"
+          puts "Looping for #{class_name.to_s}".colorize(:blue)
           if client = server.accept?
             n += 1
             done_channel = Channel(Command).new
@@ -80,12 +82,17 @@ class GeneralServer
 
   def setup_signals
     Signal::INT.trap do
-      puts "SIGINT, exiting gracefully!"
+      puts "SIGINT, exiting gracefully!".colorize(:red)
 
       @channels.each do |channel|
         unless channel.closed?
           channel.send(Command::Quit)
         end
+      end
+
+      1.upto(3) do |n|
+        puts n.colorize(:yellow)
+        sleep 0.5
       end
 
       exit 0
@@ -97,7 +104,7 @@ class GeneralServer
     sidekiq_pusher = SidekiqPusher.new(redis.url)
 
     if sidekiq_pusher.ping
-      puts "Redis OK (#{redis.url})"
+      puts "Redis OK (#{redis.url})".colorize(:blue)
     else
       raise "Problem with redis"
     end
@@ -111,7 +118,7 @@ class GeneralServer
       puts "Feedback channel: waiting for data..."
       data = @channel.receive
 
-      puts "Reveived command: #{data["command"]}"
+      puts "Reveived command: #{data["command"].colorize(:green)}"
       pp data
 
       save_log(data)
@@ -147,6 +154,8 @@ class GeneralServer
 
         @sidekiq_pusher.call(worker_class, queue, push_data)
       end
+
+      puts "\n"
     end
   end
 
