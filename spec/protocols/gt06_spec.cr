@@ -123,7 +123,7 @@ describe "Protocols::Gt06" do
 
     it "returns data" do
       proto.data.should eq({
-        "date"  => "2010-03-23 17:50:23 +02:00",
+        "date"  => "2010-03-23 16:50:23 +01:00",
         "lat"   => "23.111668",
         "lng"   => "114.409285",
         "speed" => "38",
