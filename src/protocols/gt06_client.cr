@@ -26,8 +26,6 @@ module Protocols
         elsif proto.protocol_number == :location || proto.protocol_number == :alarm
           puts "device_id: #{@device_id.colorize(:green)}"
 
-          pp proto.location_data
-
           if proto.protocol_number == :location
             puts "Sending gps data"
             send_data("gps_position", proto.location_data)

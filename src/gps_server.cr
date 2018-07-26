@@ -118,13 +118,12 @@ class GeneralServer
       puts "Feedback channel: waiting for data..."
       data = @channel.receive
 
-      puts "Reveived command: #{data["command"].colorize(:green)}"
-      pp data
-
       save_log(data)
 
       case data["command"]
       when "register", "handshake"
+        puts "Reveived command: #{data["command"].colorize(:green)}"
+        pp data
         worker_class = "UpdateGpsDeviceStatusWorker"
         queue = "gps_devices"
         push_data = {
@@ -134,6 +133,8 @@ class GeneralServer
         }
         @sidekiq_pusher.call(worker_class, queue, push_data)
       when "unregister"
+        puts "Reveived command: #{data["command"].colorize(:green)}"
+        pp data
         worker_class = "UpdateGpsDeviceStatusWorker"
         queue = "gps_devices"
         push_data = {
@@ -142,6 +143,8 @@ class GeneralServer
         }
         @sidekiq_pusher.call(worker_class, queue, push_data)
       when "gps_position"
+        puts "#{data["command"].colorize(:magenta)} #{data["device_id"].colorize(:green)} #{data["lat"].colorize(:blue)} #{data["lng"].colorize(:blue)} #{data["speed"].colorize(:red)} km/h #{data["date"].colorize(:yellow)}"
+
         worker_class = "PushGpsDeviceActivityWorker"
         queue = "gps_devices"
         push_data = {
@@ -153,6 +156,9 @@ class GeneralServer
         }
 
         @sidekiq_pusher.call(worker_class, queue, push_data)
+      else
+        puts "Reveived command: #{data["command"].colorize(:green)}"
+        pp data
       end
 
       puts "\n"

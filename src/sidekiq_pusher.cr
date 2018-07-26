@@ -6,7 +6,7 @@ class SidekiqPusher
   end
 
   def call(worker_class : String, queue : String, data : Hash(String, String))
-    puts "[sidekiq_pusher] Pushing data to redis"
+    # puts "[sidekiq_pusher] Pushing data to redis"
 
     msg = {
       "class"       => worker_class,
@@ -20,7 +20,7 @@ class SidekiqPusher
 
     @redis.lpush("queue:#{queue}", msg.to_json)
     @redis.sadd("queues", queue)
-    puts "[sidekiq_pusher] Done."
+    puts "[sidekiq_pusher] Pushed to redis."
   end
 
   def ping
