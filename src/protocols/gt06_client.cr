@@ -14,7 +14,7 @@ module Protocols
 
         message_hex = StringUtils.bin_to_hex(message.bytes).join(" ")
 
-        puts "[#{tmp_time_formatted}] #{proto.protocol_number} received data: #{message_hex}"
+        puts "[#{"GT06".colorize(:blue)}] [#{tmp_time_formatted}] #{proto.protocol_number} received data: #{message_hex}"
 
         if proto.protocol_number == :unknown
           break
@@ -22,9 +22,11 @@ module Protocols
 
         if proto.protocol_number == :login
           @device_id = proto.login_data["device_id"]
-          puts "device_id: #{@device_id}"
+          puts "device_id: #{@device_id.colorize(:green)}"
         elsif proto.protocol_number == :location || proto.protocol_number == :alarm
-          puts "device_id: #{@device_id}"
+          puts "device_id: #{@device_id.colorize(:green)}"
+
+          pp proto.location_data
 
           if proto.protocol_number == :location
             puts "Sending gps data"

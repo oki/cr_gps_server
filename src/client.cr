@@ -22,7 +22,7 @@ abstract class Client
     spawn do
       begin
         message = @done_channel.receive
-        puts "message from done_channel: #{message}"
+        puts "Message from done_channel: #{message}".colorize(:red)
         quit
       rescue Channel::ClosedError
         # ignore
@@ -40,10 +40,11 @@ abstract class Client
   end
 
   def quit
-    puts "Quiting client"
-    puts "Client disconnected"
-    send_data("unregister", {"device_id" => @device_id})
-    @done_channel.close
-    @client.close
+    unless @done_channel.closed?
+      puts "Disconnecting #{@device_id.colorize(:green)}"
+      send_data("unregister", {"device_id" => @device_id})
+      @done_channel.close
+      @client.close
+    end
   end
 end
