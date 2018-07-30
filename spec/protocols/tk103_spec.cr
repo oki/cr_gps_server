@@ -58,6 +58,32 @@ describe "Protocols::Tk103" do
     end
   end
 
+  describe "-2.580742W" do
+    message = "(087074937206BR00180730A3917.0929N00234.8445W000.2073114000.0011000000L000450AB)"
+    proto = Protocols::Tk103.new(message.bytes)
+
+    it "returns command" do
+      proto.command.should eq("BR00")
+    end
+
+    it "returns body" do
+      proto.body.should eq("180730A3917.0929N00234.8445W000.2073114000.0011000000L000450")
+    end
+
+    it "returns response" do
+      proto.response.should be_nil
+    end
+
+    it "returns gps_data" do
+      proto.gps_data.should eq({
+        "date"  => "2018-07-30 09:31:14 +02:00",
+        "lat"   => "39.284882",
+        "lng"   => "-2.580742",
+        "speed" => "0.2",
+      })
+    end
+  end
+
   describe "3.2.6 Isochronous for continues feedback message BR00" do
     # (087074970165BR00180522A5213.6890N01814.9675E000.3152200000.0011000000L000450AB)
     feedback_bytes = StringUtils.hex_string_to_bin2("28 30 38 37 30 37 34 39 37 30 31 36 35 42 52 30 30 31 38 30 35 32 32 41 35 32 31 33 2e 36 38 39 30 4e 30 31 38 31 34 2e 39 36 37 35 45 30 30 30 2e 33 31 35 32 32 30 30 30 30 30 2e 30 30 31 31 30 30 30 30 30 30 4c 30 30 30 34 35 30 41 42 29")

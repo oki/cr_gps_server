@@ -56,13 +56,19 @@ module Protocols
       lat = data[7..15].to_f / 100
       int_part = lat.to_i
       fixed_fraction_part = (((lat - int_part)/60)*100)
-      lat = "%.6f" % (int_part + fixed_fraction_part)
+      lat = int_part + fixed_fraction_part
+      lat = data[16] == 'S' ? -lat : lat
+      lat = "%.6f" % (lat)
 
       # Longitude
       lng = data[17..26].to_f / 100
       int_part = lng.to_i
       fixed_fraction_part = (((lng - int_part)/60)*100)
-      lng = "%.6f" % (int_part + fixed_fraction_part)
+      lng = int_part + fixed_fraction_part
+      lng = data[27] == 'W' ? -lng : lng
+      lng = "%.6f" % (lng)
+
+      # puts "lng: #{data[27]} #{lng}"
 
       # Make Packet Time
       yy = ("20" + data[0..1]).to_i
