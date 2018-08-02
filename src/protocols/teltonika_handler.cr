@@ -12,7 +12,7 @@ module Protocols
         tmp_time = Time.now
         tmp_time_formatted = Time.now.to_s("%Y-%m-%d %H:%M:%S")
 
-        10.times {
+        30.times {
           proto = Protocols::Teltonika.new(message.bytes)
 
           message_hex = StringUtils.bin_to_hex(message.bytes).join(" ")
