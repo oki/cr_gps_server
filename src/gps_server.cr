@@ -128,6 +128,7 @@ class GeneralServer
         queue = "gps_devices"
         push_data = {
           "imei"         => data["device_id"],
+          "name"         => data["name"],
           "status"       => "online",
           "last_seen_at" => Time.now.to_s,
         }
@@ -139,6 +140,7 @@ class GeneralServer
         queue = "gps_devices"
         push_data = {
           "imei"   => data["device_id"],
+          "name"   => data["name"],
           "status" => "offline",
         }
         @sidekiq_pusher.call(worker_class, queue, push_data)
@@ -153,6 +155,7 @@ class GeneralServer
           "lat"      => data["lat"],
           "lng"      => data["lng"],
           "speed"    => data["speed"],
+          "name"     => data["name"],
         }
 
         @sidekiq_pusher.call(worker_class, queue, push_data)

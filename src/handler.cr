@@ -3,9 +3,11 @@ abstract class Handler
   @channel : Channel::Unbuffered(Hash(String, String))
   @done_channel : Channel::Unbuffered(Command)
   @device_id : String
+  @name : String
 
   def initialize(@client, @channel, @done_channel)
     @device_id = ""
+    @name = self.class.to_s.gsub("Protocols::", "").gsub("Handler", "")
   end
 
   def call
@@ -35,6 +37,7 @@ abstract class Handler
       @channel.send(data.merge({
         "command"   => command,
         "device_id" => @device_id,
+        "name"      => @name,
       }))
     end
   end
