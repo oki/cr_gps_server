@@ -1,4 +1,4 @@
-abstract class Client
+abstract class Handler
   @client : TCPSocket
   @channel : Channel::Unbuffered(Hash(String, String))
   @done_channel : Channel::Unbuffered(Command)
@@ -41,7 +41,10 @@ abstract class Client
 
   def quit
     unless @done_channel.closed?
-      puts "Disconnecting #{@device_id.colorize(:green)}"
+      tmp_time = Time.now
+      tmp_time_formatted = Time.now.to_s("%Y-%m-%d %H:%M:%S")
+
+      puts "[#{tmp_time_formatted}] Disconnecting #{@device_id.colorize(:green)}"
       send_data("unregister", {"device_id" => @device_id})
       @done_channel.close
       @client.close

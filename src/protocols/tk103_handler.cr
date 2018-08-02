@@ -1,5 +1,5 @@
 module Protocols
-  class Tk103Client < Client
+  class Tk103Handler < Handler
     def handle_messages
       puts "[TK103] Client connected!"
 

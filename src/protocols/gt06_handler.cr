@@ -1,5 +1,5 @@
 module Protocols
-  class Gt06Client < Client
+  class Gt06Handler < Handler
     def handle_messages
       puts "[Gt06] Client connected!"
 

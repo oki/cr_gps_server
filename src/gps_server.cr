@@ -1,6 +1,6 @@
 require "socket"
 require "colorize"
-require "./client"
+require "./handler"
 require "./protocols/*"
 require "./sidekiq_pusher"
 
@@ -22,7 +22,7 @@ Dotenv.load("/apps/#{s_foo}/shared/.env")
 Dotenv.load("/Users/oki/dev/work/#{s_foo}/.env")
 Colorize.enabled = true
 
-alias GpsProtocol = (Protocols::Tk103Client.class | Protocols::Gt06Client.class)
+alias GpsProtocol = (Protocols::Tk103Handler.class | Protocols::Gt06Handler.class | Protocols::TeltonikaHandler.class)
 
 class GeneralServer
   @sidekiq_pusher : SidekiqPusher
@@ -34,7 +34,7 @@ class GeneralServer
     @channel = Channel(Hash(String, String)).new
     @gps_protocols = Hash(UInt32, GpsProtocol).new
 
-    path = "request_logs.json"
+    path = "debug_request_logs.json"
     @log_file = File.new(path, "a")
 
     @sidekiq_pusher = setup_sidekiq_pusher
