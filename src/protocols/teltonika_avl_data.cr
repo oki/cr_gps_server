@@ -5,7 +5,7 @@ module Protocols
 
     def initialize(@data)
       @data = data
-      @avl_data_count = @data.shift(1).first.to_s(16).to_i
+      @avl_data_count = extract_int(1).to_i
       @debug = false
     end
 
@@ -15,6 +15,8 @@ module Protocols
       result = [] of Hash(String, String)
 
       @avl_data_count.times do |n|
+        debug "#{n}"
+
         # gps data
         date = Time.epoch_ms(extract_int(8)).to_local.to_s
         debug "date: #{date}"

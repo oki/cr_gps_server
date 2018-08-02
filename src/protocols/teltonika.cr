@@ -70,7 +70,7 @@ module Protocols
     end
 
     def avl_data_count
-      avl_data_count_raw.to_s(16).to_i
+      avl_data_count_raw.to_s(16).rjust(2, '0').to_i64(16, prefix: false)
     end
 
     def avl_data
