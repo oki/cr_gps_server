@@ -1,7 +1,6 @@
 abstract class Handler
   @client : TCPSocket
-  # @channel : Channel::Unbuffered(GpsData)
-  @channel : Channel::Unbuffered(Hash(String, String | Array(Hash(String, String))))
+  @channel : Channel::Unbuffered(GpsData)
   @done_channel : Channel::Unbuffered(Command)
   @device_id : String
   @name : String
