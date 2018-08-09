@@ -23,6 +23,9 @@ Dotenv.load("/Users/oki/dev/work/#{s_foo}/.env")
 Colorize.enabled = true
 
 alias GpsProtocol = (Protocols::Tk103Handler.class | Protocols::Gt06Handler.class | Protocols::TeltonikaHandler.class)
+alias GpsData = Hash(String, String | Array(GpsData))
+
+# alias GpsData = Hash(String, String | Array(Hash(String, String)))
 
 class GeneralServer
   @sidekiq_pusher : SidekiqPusher
@@ -31,7 +34,7 @@ class GeneralServer
     @host = "0.0.0.0"
 
     @channels = [] of Channel(Command)
-    @channel = Channel(Hash(String, String)).new
+    @channel = Channel(GpsData).new
     @gps_protocols = Hash(UInt32, GpsProtocol).new
 
     path = "debug_request_logs.json"
@@ -158,6 +161,10 @@ class GeneralServer
           "name"     => data["name"],
         }
 
+        if data.has_key?("events")
+          dump_events(data["events"])
+        end
+
         @sidekiq_pusher.call(worker_class, queue, push_data)
       else
         puts "Reveived command: #{data["command"].colorize(:green)}"
@@ -171,5 +178,9 @@ class GeneralServer
   def save_log(data)
     @log_file.puts (data.merge({"_ts" => Time.now.to_s})).to_json
     @log_file.flush
+  end
+
+  def dump_events(events)
+    puts "Dumping events :)"
   end
 end

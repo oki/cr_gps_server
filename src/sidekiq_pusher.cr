@@ -5,7 +5,7 @@ class SidekiqPusher
     @redis = Redis.new(url: redis_url)
   end
 
-  def call(worker_class : String, queue : String, data : Hash(String, String))
+  def call(worker_class : String, queue : String, data : GpsData)
     # puts "[sidekiq_pusher] Pushing data to redis"
 
     msg = {

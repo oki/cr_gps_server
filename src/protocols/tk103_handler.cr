@@ -4,7 +4,7 @@ module Protocols
       puts "[TK103] Client connected!"
 
       # @gps_positions = Array(Hash(String, String) | Nil).new
-      gps_positions = [] of Hash(String, String)
+      gps_positions = [] of GpsData
 
       400.times do |n|
         message = @client.gets(")")
