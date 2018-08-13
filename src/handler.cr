@@ -1,6 +1,6 @@
 abstract class Handler
   @client : TCPSocket
-  @channel : Channel::Unbuffered(Hash(String, String))
+  @channel : Channel::Unbuffered(GpsData)
   @done_channel : Channel::Unbuffered(Command)
   @device_id : String
   @name : String
@@ -32,7 +32,7 @@ abstract class Handler
     end
   end
 
-  def send_data(command : String, data : Hash(String, String))
+  def send_data(command : String, data : GpsData)
     unless @device_id.empty?
       @channel.send(data.merge({
         "command"   => command,

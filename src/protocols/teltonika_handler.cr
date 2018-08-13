@@ -51,8 +51,13 @@ module Protocols
         elsif proto.command_name == :avl_data
           puts "Sending gps data"
 
-          proto.avl_data.each do |gps_data|
+          proto.gps_data.each do |gps_data|
             send_data("gps_position", gps_data)
+          end
+
+          proto.io_events.each do |io_event_data|
+            pp io_event_data
+            # send_data("gps_position", gps_data)
           end
         end
 

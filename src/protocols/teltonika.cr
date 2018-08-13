@@ -75,8 +75,17 @@ module Protocols
 
     def avl_data
       offset = 9
-      # @data[offset..-5]
-      TeltonikaAvlData.new(@data[offset..-5]).data
+      @_avl_data ||= TeltonikaAvlData.new(@data[offset..-5])
+    end
+
+    def gps_data
+      offset = 9
+      avl_data.gps_data
+    end
+
+    def io_events
+      offset = 9
+      avl_data.io_events
     end
 
     def correct_package_size?

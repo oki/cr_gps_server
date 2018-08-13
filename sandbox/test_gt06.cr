@@ -4,7 +4,7 @@ require "../src/string_utils"
 host = "127.0.0.1"
 port = 5022
 
-login = StringUtils.hex_string_to_bin("78 78 0d 01 03 52 88 70 78 00 37 81 00 02 34 5e 0d 0a").map(&.chr).join
+login = StringUtils.hex_string_to_bin("78 78 0d 01 03 52 88 70 78 00 37 81 00 05 40 e1 0d 0a").map(&.chr).join
 
 pp StringUtils.bin_to_hex(login.bytes).join(" ")
 

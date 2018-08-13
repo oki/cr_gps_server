@@ -55,10 +55,10 @@ describe "Protocols::Teltonika" do
       proto.response.should eq(Bytes[0, 0, 0, 14])
     end
 
-    it "returns avl_data" do
-      # proto.avl_data.should eq(avl_bytes[9..-5])
+    it "returns gps_data" do
+      # proto.gps_data.should eq(avl_bytes[9..-5])
 
-      proto.avl_data[0].should eq(
+      proto.gps_data[0].should eq(
         {
           "date"  => "2018-08-02 14:23:22 +02:00",
           "lat"   => "50.112497",
@@ -67,7 +67,7 @@ describe "Protocols::Teltonika" do
         }
       )
 
-      proto.avl_data[-1].should eq(
+      proto.gps_data[-1].should eq(
         {
           "date"  => "2018-08-02 13:34:01 +02:00",
           "lat"   => "50.112753",
@@ -110,10 +110,8 @@ describe "Protocols::Teltonika" do
       proto.response.should eq(Bytes[0, 0, 0, 6])
     end
 
-    it "returns avl_data" do
-      # proto.avl_data.should eq(avl_bytes[9..-5])
-
-      proto.avl_data.should eq([
+    it "returns gps_data" do
+      proto.gps_data.should eq([
         {
           "date"  => "2018-08-01 21:48:35 +02:00",
           "lat"   => "50.101463",
@@ -181,6 +179,172 @@ describe "Protocols::Teltonika" do
 
     it "returns response" do
       proto.response.should eq(Bytes[0, 0, 0, 5])
+    end
+  end
+
+  describe "AVL data package 2" do
+    # avl_bytes = StringUtils.hex_string_to_bin2("00 00 00 00 00 00 00 44 08 01 00 00 01 65 18 e6 4d 98 00 0b df d5 12 1d de 91 28 00 e5 01 42 09 00 00 f0 0d 06 ef 00 f0 00 50 01 15 03 c8 00 45 01 06 b5 00 0d b6 00 0a 42 2c ba 18 00 00 43 0c f9 44 00 00 01 10 00 04 de 18 00 01 00 00 42 bd")
+    # avl_bytes = StringUtils.hex_string_to_bin2("00 00 00 00 00 00 01 0d 08 04 00 00 01 65 18 f5 8b f0 00 0b df d5 12 1d de 91 28 00 e5 01 42 13 00 00 f7 0e 07 ef 00 f0 01 50 01 15 03 c8 00 45 01 f7 01 06 b5 00 09 b6 00 06 42 2c ba 18 00 00 43 0c f0 44 00 00 01 10 00 04 de 18 00 00 00 01 65 18 f5 26 60 00 0b df d5 12 1d de 91 28 00 e5 01 42 13 00 00 f6 0e 07 ef 00 f0 01 50 00 15 03 c8 00 45 01 f6 01 06 b5 00 09 b6 00 06 42 2c ba 18 00 00 43 0c f0 44 00 00 01 10 00 04 de 18 00 00 00 01 65 18 f5 22 82 00 0b df d5 12 1d de 91 28 00 e5 00 00 09 00 00 f7 0e 07 ef 00 f0 01 50 00 15 03 c8 00 45 01 f7 01 06 b5 00 09 b6 00 06 42 2c ba 18 00 00 43 0c f0 44 00 00 01 10 00 04 de 18 00 00 00 01 65 18 f5 22 78 00 0b df d5 12 1d de 91 28 00 e5 00 00 09 00 00 f0 0d 06 ef 00 f0 01 50 00 15 03 c8 00 45 01 06 b5 00 09 b6 00 06 42 2c ba 18 00 00 43 0c f0 44 00 00 01 10 00 04 de 18 00 04 00 00 a5 c7")
+    avl_bytes = StringUtils.hex_string_to_bin2("00 00 00 00 00 00 00 f7 08 04 00 00 01 65 19 03 95 b0 01 0b df d7 7a 1d de 90 92 00 00 00 00 00 00 00 fc 0e 07 ef 00 f0 01 50 01 15 00 c8 00 45 02 fc 01 06 b5 00 0c b6 00 09 42 0a 2c 18 00 00 43 0c d1 44 00 00 01 10 00 04 de 18 00 00 00 01 65 19 03 8d ea 00 0b df d7 7a 1d de 90 92 00 00 00 00 00 00 00 f7 0e 07 ef 00 f0 01 50 01 15 00 c8 00 45 02 f7 01 06 b5 00 0c b6 00 09 42 2a 8b 18 00 00 43 0d 05 44 00 00 01 10 00 04 de 18 00 00 00 01 65 19 03 8d e0 00 0b df d7 7a 1d de 90 92 00 00 00 00 00 00 00 f6 0a 06 ef 00 f0 01 50 00 c8 02 45 03 f6 01 03 42 2c ba 43 0d 0c 44 00 00 01 10 00 04 de 18 00 00 00 01 65 19 03 89 f8 00 0b df d7 7a 1d de 90 92 00 00 00 00 00 00 00 f0 09 05 ef 00 f0 01 50 00 c8 02 45 03 03 42 2c ba 43 0d 0c 44 00 00 01 10 00 04 de 18 00 04 00 00 7f f9")
+
+    proto = Protocols::Teltonika.new(avl_bytes)
+
+    it "returns command name" do
+      proto.command_name.should eq(:avl_data)
+    end
+
+    it "returns avl_data_length" do
+      proto.avl_data_length.should eq(247)
+    end
+
+    it "has correct package size" do
+      proto.correct_package_size?.should be_truthy
+    end
+
+    # 08
+    it "returns codec ID" do
+      proto.codec_id.should eq("08")
+    end
+
+    # 06
+    it "returns avl_data_count" do
+      proto.avl_data_count.should eq(4)
+    end
+
+    it "returns gps_data" do
+      proto.gps_data.should eq([
+        {
+          "date"  => "2018-08-08 12:09:50 +02:00",
+          "lat"   => "50.112527",
+          "lng"   => "19.921907",
+          "speed" => "0",
+        },
+        {
+          "date"  => "2018-08-08 12:09:48 +02:00",
+          "lat"   => "50.112527",
+          "lng"   => "19.921907",
+          "speed" => "0",
+        },
+        {
+          "date"  => "2018-08-08 12:09:48 +02:00",
+          "lat"   => "50.112527",
+          "lng"   => "19.921907",
+          "speed" => "0",
+        },
+        {
+          "date"  => "2018-08-08 12:09:47 +02:00",
+          "lat"   => "50.112527",
+          "lng"   => "19.921907",
+          "speed" => "0",
+        },
+      ])
+    end
+
+    it "returns io_events" do
+      proto.io_events.should eq([
+        {
+          "date"                => "2018-08-08 12:09:50 +02:00",
+          "main_event"          => "unplug_event",
+          "ignition"            => "0",
+          "movement"            => "1",
+          "data_mode"           => "1",
+          "gsm_signal_strength" => "0",
+          "sleep_mode"          => "0",
+          "gnss_status"         => "2",
+          "unplug_event"        => "1",
+          "pdop"                => "12",
+          "hdop"                => "9",
+          "ext_voltage"         => "2604",
+          "speed"               => "0",
+          "battery_voltage"     => "3281",
+          "battery_current"     => "0",
+          "total_odometer"      => "319000",
+        },
+        {
+          "date"                => "2018-08-08 12:09:48 +02:00",
+          "main_event"          => "crash_detection",
+          "ignition"            => "0",
+          "movement"            => "1",
+          "data_mode"           => "1",
+          "gsm_signal_strength" => "0",
+          "sleep_mode"          => "0",
+          "gnss_status"         => "2",
+          "crash_detection"     => "1",
+          "pdop"                => "12",
+          "hdop"                => "9",
+          "ext_voltage"         => "10891",
+          "speed"               => "0",
+          "battery_voltage"     => "3333",
+          "battery_current"     => "0",
+          "total_odometer"      => "319000",
+        },
+        {
+          "date"                   => "2018-08-08 12:09:48 +02:00",
+          "main_event"             => "towing_detection_event",
+          "ignition"               => "0",
+          "movement"               => "1",
+          "data_mode"              => "0",
+          "sleep_mode"             => "2",
+          "gnss_status"            => "3",
+          "towing_detection_event" => "1",
+          "ext_voltage"            => "11450",
+          "battery_voltage"        => "3340",
+          "battery_current"        => "0",
+          "total_odometer"         => "319000",
+        },
+        {
+          "date"            => "2018-08-08 12:09:47 +02:00",
+          "main_event"      => "movement",
+          "ignition"        => "0",
+          "movement"        => "1",
+          "data_mode"       => "0",
+          "sleep_mode"      => "2",
+          "gnss_status"     => "3",
+          "ext_voltage"     => "11450",
+          "battery_voltage" => "3340",
+          "battery_current" => "0",
+          "total_odometer"  => "319000",
+        },
+      ])
+    end
+  end
+
+  describe "AVL data package 3" do
+    avl_bytes = StringUtils.hex_string_to_bin2("00 00 00 00 00 00 00 59 08 01 00 00 01 65 1f 9d 7a f8 00 0b e6 46 18 1d dc d0 22 01 33 00 71 06 00 00 f0 10 06 ef 00 f0 00 50 01 15 03 c8 00 45 01 07 b5 00 18 b6 00 16 42 30 d3 18 00 00 43 0c 88 44 00 00 0f 00 00 01 10 00 05 20 ef 02 0b 00 00 00 02 15 58 93 7a 0e 00 00 00 00 19 78 b4 69 01 00 00 10 81")
+
+    proto = Protocols::Teltonika.new(avl_bytes)
+
+    it "returns command name" do
+      proto.command_name.should eq(:avl_data)
+    end
+
+    it "has correct package size" do
+      proto.correct_package_size?.should be_truthy
+    end
+
+    it "returns io_events" do
+      proto.io_events.should eq([
+        {
+          "date"                => "2018-08-09 18:55:39 +02:00",
+          "main_event"          => "movement",
+          "ignition"            => "0",
+          "movement"            => "0",
+          "data_mode"           => "1",
+          "gsm_signal_strength" => "3",
+          "sleep_mode"          => "0",
+          "gnss_status"         => "1",
+          "pdop"                => "24",
+          "hdop"                => "22",
+          "ext_voltage"         => "12499",
+          "speed"               => "0",
+          "battery_voltage"     => "3208",
+          "battery_current"     => "0",
+          "eco_score"           => "0",
+          "total_odometer"      => "336111",
+          "sim_iccid1_number"   => "8948061050",
+          "sim_iccid2_number"   => "427340905",
+        },
+      ])
     end
   end
 end
