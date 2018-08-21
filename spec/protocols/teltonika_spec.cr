@@ -244,7 +244,7 @@ describe "Protocols::Teltonika" do
       proto.io_events.should eq([
         {
           "date"                => "2018-08-08 12:09:50 +02:00",
-          "main_event"          => "unplug_event",
+          "event_name"          => "unplug_event",
           "ignition"            => "0",
           "movement"            => "1",
           "data_mode"           => "1",
@@ -262,7 +262,7 @@ describe "Protocols::Teltonika" do
         },
         {
           "date"                => "2018-08-08 12:09:48 +02:00",
-          "main_event"          => "crash_detection",
+          "event_name"          => "crash_detection",
           "ignition"            => "0",
           "movement"            => "1",
           "data_mode"           => "1",
@@ -280,7 +280,7 @@ describe "Protocols::Teltonika" do
         },
         {
           "date"                   => "2018-08-08 12:09:48 +02:00",
-          "main_event"             => "towing_detection_event",
+          "event_name"             => "towing_detection_event",
           "ignition"               => "0",
           "movement"               => "1",
           "data_mode"              => "0",
@@ -294,7 +294,7 @@ describe "Protocols::Teltonika" do
         },
         {
           "date"            => "2018-08-08 12:09:47 +02:00",
-          "main_event"      => "movement",
+          "event_name"      => "movement",
           "ignition"        => "0",
           "movement"        => "1",
           "data_mode"       => "0",
@@ -309,40 +309,33 @@ describe "Protocols::Teltonika" do
     end
   end
 
-  describe "AVL data package 3" do
-    avl_bytes = StringUtils.hex_string_to_bin2("00 00 00 00 00 00 00 59 08 01 00 00 01 65 1f 9d 7a f8 00 0b e6 46 18 1d dc d0 22 01 33 00 71 06 00 00 f0 10 06 ef 00 f0 00 50 01 15 03 c8 00 45 01 07 b5 00 18 b6 00 16 42 30 d3 18 00 00 43 0c 88 44 00 00 0f 00 00 01 10 00 05 20 ef 02 0b 00 00 00 02 15 58 93 7a 0e 00 00 00 00 19 78 b4 69 01 00 00 10 81")
+  describe "AVL data package 4" do
+    avl_bytes = StringUtils.hex_string_to_bin2("00 00 00 00 00 00 00 59 08 01 00 00 01 65 33 1b 0f 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 f0 10 06 ef 00 f0 00 50 01 15 03 c8 00 45 02 07 b5 00 00 b6 00 00 42 00 00 18 00 00 43 0e d3 44 00 00 0f 00 00 01 10 00 00 00 00 02 0b 00 00 00 02 15 58 93 7a 0e 00 00 00 00 1e 14 99 6f 01 00 00 74 7b")
 
     proto = Protocols::Teltonika.new(avl_bytes)
-
-    it "returns command name" do
-      proto.command_name.should eq(:avl_data)
-    end
-
-    it "has correct package size" do
-      proto.correct_package_size?.should be_truthy
-    end
 
     it "returns io_events" do
       proto.io_events.should eq([
         {
-          "date"                => "2018-08-09 18:55:39 +02:00",
-          "main_event"          => "movement",
+          "date"                => "2018-08-13 13:45:36 +02:00",
+          "event_name"          => "movement",
           "ignition"            => "0",
           "movement"            => "0",
           "data_mode"           => "1",
           "gsm_signal_strength" => "3",
           "sleep_mode"          => "0",
-          "gnss_status"         => "1",
-          "pdop"                => "24",
-          "hdop"                => "22",
-          "ext_voltage"         => "12499",
+          "gnss_status"         => "2",
+          "pdop"                => "0",
+          "hdop"                => "0",
+          "ext_voltage"         => "0",
           "speed"               => "0",
-          "battery_voltage"     => "3208",
+          "battery_voltage"     => "3795",
           "battery_current"     => "0",
           "eco_score"           => "0",
-          "total_odometer"      => "336111",
+          "total_odometer"      => "0",
           "sim_iccid1_number"   => "8948061050",
-          "sim_iccid2_number"   => "427340905",
+          "sim_iccid2_number"   => "504666479",
+          "sim_iccid"           => "89480610500504666479",
         },
       ])
     end

@@ -56,8 +56,14 @@ module Protocols
           end
 
           proto.io_events.each do |io_event_data|
-            pp io_event_data
-            # send_data("gps_position", gps_data)
+            allowed_events = ["unplug_event", "crash_detection", "towing_detection_event", "ignition"]
+
+            if allowed_events.includes?(io_event_data["event_name"])
+              puts "Sending data for event: #{io_event_data["event_name"].colorize(:red)}"
+              send_data("event", io_event_data)
+            else
+              puts "Skipped data for event: #{io_event_data["event_name"].colorize(:red)}"
+            end
           end
         end
 

@@ -65,7 +65,7 @@ module Protocols
 
         event_data = {
           "date"       => date,
-          "main_event" => event_name(event_id).to_s,
+          "event_name" => event_name(event_id).to_s,
         }
 
         # take(element_count_1b * 2)
@@ -110,6 +110,8 @@ module Protocols
           event_data[event_name.to_s] = element_8b_value.to_s
         end
 
+        prepare_iccid(event_data)
+
         @events.push(event_data)
       end
     end
@@ -135,6 +137,25 @@ module Protocols
     private def debug(str)
       if @debug
         puts str
+      end
+    end
+
+    private def prepare_iccid(event_data)
+      if event_data.has_key?("sim_iccid1_number") && event_data.has_key?("sim_iccid2_number")
+        sim_iccid1_number_len = event_data["sim_iccid1_number"].size
+        sim_iccid2_number_len = event_data["sim_iccid2_number"].size
+
+        add_zeros = ""
+
+        if sim_iccid2_number_len < 10
+          add_zeros = "0" * (10 - sim_iccid2_number_len)
+        end
+
+        event_data["sim_iccid"] = [
+          event_data["sim_iccid1_number"],
+          add_zeros,
+          event_data["sim_iccid2_number"],
+        ].join
       end
     end
 
