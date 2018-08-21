@@ -30,14 +30,9 @@ class GeneralServer
 
   def initialize
     @host = "0.0.0.0"
-
     @channels = [] of Channel(Command)
     @channel = Channel(GpsData).new
     @gps_protocols = Hash(UInt32, GpsProtocol).new
-
-    path = "debug_request_logs.json"
-    @log_file = File.new(path, "a")
-
     @sidekiq_pusher = setup_sidekiq_pusher
   end
 
@@ -159,9 +154,18 @@ class GeneralServer
           "name"     => data["name"],
         }
 
-        if data.has_key?("events")
-          dump_events(data["events"])
-        end
+        @sidekiq_pusher.call(worker_class, queue, push_data)
+      when "event"
+        puts "#{data["command"].colorize(:magenta)} #{data["device_id"].colorize(:green)} #{data["event_name"].colorize(:green)}"
+
+        worker_class = "PushDeviceEventWorker"
+        queue = "gps_devices"
+        push_data = {
+          "imei"     => data["device_id"],
+          "datetime" => data["date"],
+        }.merge(data)
+
+        puts push_data
 
         @sidekiq_pusher.call(worker_class, queue, push_data)
       else
@@ -174,8 +178,12 @@ class GeneralServer
   end
 
   def save_log(data)
-    @log_file.puts (data.merge({"_ts" => Time.now.to_s})).to_json
-    @log_file.flush
+    imei = data["device_id"]
+    path = "logs/#{imei}.log"
+    log_file = File.new(path, "a")
+    log_file.puts (data.merge({"_ts" => Time.now.to_s})).to_json
+    log_file.flush
+    log_file.close
   end
 
   def dump_events(events)
