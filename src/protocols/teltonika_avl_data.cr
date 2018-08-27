@@ -28,10 +28,16 @@ module Protocols
         priority = extract_int(1)
         debug "priority: #{priority}"
 
-        lng = "%.6f" % (extract_int(4) / 100_00_000.0)
+        raw_lng = extract_int(4)
+
+        lng = "%.6f" % (raw_lng / 100_00_000.0)
+        debug "raw_lng: #{raw_lng}"
         debug "lng: #{lng}"
 
-        lat = "%.6f" % (extract_int(4) / 100_00_000.0)
+        raw_lat = extract_int(4)
+
+        lat = "%.6f" % (raw_lat / 100_00_000.0)
+        debug "raw_lat: #{raw_lat}"
         debug "lat: #{lat}"
 
         altitude = extract_int(2)
@@ -127,7 +133,12 @@ module Protocols
     end
 
     private def extract_int(len)
-      take(len).map { |h| h.to_s(16).rjust(2, '0') }.join.to_i64(16, prefix: false)
+      arr = take(len).map { |h| h.to_s(16).rjust(2, '0') }
+      if arr[0] == "ff"
+        -arr[1..-1].join.to_i64(16, prefix: false)
+      else
+        arr.join.to_i64(16, prefix: false)
+      end
     end
 
     private def take(len)

@@ -309,6 +309,65 @@ describe "Protocols::Teltonika" do
     end
   end
 
+  describe "AVL negativ gps package" do
+    avl_bytes = StringUtils.hex_string_to_bin2("00 00 00 00 00 00 00 59 08 01 00 00 01 65 7a 6c 9c 98 00 ff b5 b0 d3 17 2e 00 d1 00 d9 00 00 11 00 00 00 10 06 ef 01 f0 00 50 04 15 04 c8 00 45 01 07 b5 00 0b b6 00 07 42 62 29 18 00 00 43 0f 9c 44 00 00 0f 00 00 01 10 00 36 1d 04 02 0b 00 00 00 02 15 58 93 7a 0e 00 00 00 00 1e 14 84 62 01 00 00 a8 fd")
+
+    proto = Protocols::Teltonika.new(avl_bytes)
+
+    it "returns command name" do
+      proto.command_name.should eq(:avl_data)
+    end
+
+    it "returns avl_data_length" do
+      proto.avl_data_length.should eq(89)
+    end
+
+    it "has correct package size" do
+      proto.correct_package_size?.should be_truthy
+    end
+
+    it "returns avl_data_count" do
+      proto.avl_data_count.should eq(1)
+    end
+
+    it "returns gps_data" do
+      proto.gps_data.should eq([
+        {
+          "date"  => "2018-08-27 10:07:43 +02:00",
+          "lat"   => "38.889083",
+          "lng"   => "-1.190728",
+          "speed" => "0",
+        },
+      ])
+    end
+
+    it "returns io_events" do
+      proto.io_events.should eq([
+        {
+          "date"                => "2018-08-27 10:07:43 +02:00",
+          "event_name"          => "unknown: 0",
+          "ignition"            => "1",
+          "movement"            => "0",
+          "data_mode"           => "4",
+          "gsm_signal_strength" => "4",
+          "sleep_mode"          => "0",
+          "gnss_status"         => "1",
+          "pdop"                => "11",
+          "hdop"                => "7",
+          "ext_voltage"         => "25129",
+          "speed"               => "0",
+          "battery_voltage"     => "3996",
+          "battery_current"     => "0",
+          "eco_score"           => "0",
+          "total_odometer"      => "3546372",
+          "sim_iccid1_number"   => "8948061050",
+          "sim_iccid2_number"   => "504661090",
+          "sim_iccid"           => "89480610500504661090",
+        },
+      ])
+    end
+  end
+
   describe "AVL data package 4" do
     avl_bytes = StringUtils.hex_string_to_bin2("00 00 00 00 00 00 00 59 08 01 00 00 01 65 33 1b 0f 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 f0 10 06 ef 00 f0 00 50 01 15 03 c8 00 45 02 07 b5 00 00 b6 00 00 42 00 00 18 00 00 43 0e d3 44 00 00 0f 00 00 01 10 00 00 00 00 02 0b 00 00 00 02 15 58 93 7a 0e 00 00 00 00 1e 14 99 6f 01 00 00 74 7b")
 
