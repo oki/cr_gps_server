@@ -28,13 +28,13 @@ module Protocols
         priority = extract_int(1)
         debug "priority: #{priority}"
 
-        raw_lng = extract_int(4)
+        raw_lng = extract_signed_int(4)
 
         lng = "%.6f" % (raw_lng / 100_00_000.0)
         debug "raw_lng: #{raw_lng}"
         debug "lng: #{lng}"
 
-        raw_lat = extract_int(4)
+        raw_lat = extract_signed_int(4)
 
         lat = "%.6f" % (raw_lat / 100_00_000.0)
         debug "raw_lat: #{raw_lat}"
@@ -133,11 +133,17 @@ module Protocols
     end
 
     private def extract_int(len)
+      take(len).map { |h| h.to_s(16).rjust(2, '0') }.join.to_i64(16, prefix: false)
+    end
+
+    private def extract_signed_int(len)
       arr = take(len).map { |h| h.to_s(16).rjust(2, '0') }
-      if arr[0] == "ff"
-        -arr[1..-1].join.to_i64(16, prefix: false)
+      value = arr.join.to_i64(16, prefix: false)
+
+      if ((value & 0xF0000000) >> 28) == 0xF
+        value - 0x100000000
       else
-        arr.join.to_i64(16, prefix: false)
+        value
       end
     end
 

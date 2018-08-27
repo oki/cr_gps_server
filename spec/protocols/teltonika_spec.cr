@@ -335,7 +335,7 @@ describe "Protocols::Teltonika" do
         {
           "date"  => "2018-08-27 10:07:43 +02:00",
           "lat"   => "38.889083",
-          "lng"   => "-1.190728",
+          "lng"   => "-0.486993",
           "speed" => "0",
         },
       ])
@@ -363,6 +363,28 @@ describe "Protocols::Teltonika" do
           "sim_iccid1_number"   => "8948061050",
           "sim_iccid2_number"   => "504661090",
           "sim_iccid"           => "89480610500504661090",
+        },
+      ])
+    end
+  end
+
+  describe "AVL negativ gps package 2" do
+    # fe d7 34 5e
+    avl_bytes = StringUtils.hex_string_to_bin2("00 00 00 00 00 00 00 59 08 01 00 00 01 65 7A 6C 9C 98 00 FE D7 34 5E 17 2E 00 D1 00 D9 00 00 11 00 00 00 10 06 EF 01 F0 00 50 04 15 04 C8 00 45 01 07 B5 00 0B B6 00 07 42 62 29 18 00 00 43 0F 9C 44 00 00 0F 00 00 01 10 00 36 1D 04 02 0B 00 00 00 02 15 58 93 7A 0E 00 00 00 00 1E 14 84 62 01 00 00 A8 FD")
+
+    proto = Protocols::Teltonika.new(avl_bytes)
+
+    it "has correct package size" do
+      proto.correct_package_size?.should be_truthy
+    end
+
+    it "returns gps_data" do
+      proto.gps_data.should eq([
+        {
+          "date"  => "2018-08-27 10:07:43 +02:00",
+          "lat"   => "38.889083",
+          "lng"   => "-1.945079",
+          "speed" => "0",
         },
       ])
     end
